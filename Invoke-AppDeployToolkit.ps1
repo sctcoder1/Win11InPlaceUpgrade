@@ -162,6 +162,30 @@ function Install-ADTDeployment
     }
 
     ## <Perform Installation tasks here>
+    <#
+    .SYNOPSIS
+        Performs system cleanup, power configuration, registry modifications, and initiates a Windows 11 in-place upgrade.
+
+    .DESCRIPTION
+        This script automates several pre-upgrade and upgrade tasks for a Windows system:
+        - Cleans up temporary files from system and user directories.
+        - Configures power settings to prevent sleep, hibernation, or disk timeouts.
+        - Removes specific registry keys related to compatibility and setup tracking.
+        - Imports a registry file to bypass upgrade checks.
+        - Copies a setup configuration file to the default user profile.
+        - Launches a utility to prevent the system from sleeping during the upgrade.
+        - Runs the Windows 11 Installation Assistant with parameters to force uninstall previous upgrades and perform a silent upgrade.
+        - Waits for the upgrade process to complete and then restores the original power scheme.
+
+    .PARAMETER scriptDirectory
+        The directory path where required files (Bypass.reg, Setupconfig.ini, caffeine64.exe, Windows11InstallationAssistant.exe) are located.
+
+    .NOTES
+        - Requires administrative privileges.
+        - Designed for use in automated or unattended Windows 11 upgrade scenarios.
+        - Modifies system power settings and registry; use with caution.
+
+    #>
 
         Get-ChildItem "$env:windir\temp\*" -Recurse -ErrorAction SilentlyContinue  | Remove-Item -Recurse -Force -Verbose -Confirm:$false -ErrorAction SilentlyContinue 
 
