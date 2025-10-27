@@ -3,13 +3,18 @@ title Windows 11 Upgrade Cleanup
 color 0A
 setlocal enabledelayedexpansion
 
+:: --- Variables ---
 set "upgdir=C:\Win11Upgrade"
 set "log=%upgdir%\Cleanup_RunLog.txt"
+set "user=WinUpgradeAdmin2"
+
 if not exist "%upgdir%" mkdir "%upgdir%" >nul 2>&1
 
-echo =========================================================== >> "%log%"
-echo Starting Windows 11 Upgrade Cleanup at %date% %time% >> "%log%"
-echo =========================================================== >> "%log%"
+(
+echo ===========================================================
+echo Starting Windows 11 Upgrade Cleanup at %date% %time%
+echo ===========================================================
+) >> "%log%"
 
 :: --- Ensure admin privileges ---
 net session >nul 2>&1
@@ -47,7 +52,13 @@ rd /s /q "%ProgramData%\Microsoft\Windows\Windows 11 Installation Assistant" 2>n
 rd /s /q "C:\Program Files (x86)\WindowsInstallationAssistant" 2>nul
 echo Residual folders removed (if any). >> "%log%"
 
-:: --- Schedule self-deletion on reboot ---
+:: --- Remove temporary upgrade admin ---
+echo. >> "%log%"
+echo Removing temporary upgrade admin account (%user%)... >> "%log%"
+net user "%user%" /delete >> "%log%" 2>&1
+echo User removal complete. >> "%log%"
+
+:: --- Schedule self-deletion on next reboot ---
 echo. >> "%log%"
 echo Scheduling self-deletion... >> "%log%"
 set "self=%~f0"
