@@ -13,6 +13,11 @@ set "zip=%root%\Win11InPlaceUpgrade.zip"
 set "url=https://github.com/sctcoder1/Win11InPlaceUpgrade/archive/refs/heads/main.zip"
 set "extractdir=%root%\Win11InPlaceUpgrade-main"
 set "installps=%extractdir%\Install.ps1"
+set "flag=%root%\Running.flag"
+
+:: --- Start heartbeat ---
+echo [%date% %time%] Starting heartbeat monitor... > "%flag%"
+start "Win11_Upgrade_Heartbeat" cmd /c "for /l %%i in () do (echo %%date%% %%time%% > \"%flag%\" & timeout /t 30 >nul)"
 
 :: --- Ensure admin privileges ---
 net session >nul 2>&1
@@ -42,7 +47,7 @@ if exist "%zip%" (
 :: --- Verify download ---
 if not exist "%zip%" (
     echo ❌ Download failed! Check your internet connection or Sophos logs.
-    pause
+    taskkill /fi "WINDOWTITLE eq Win11_Upgrade_Heartbeat" /f >nul 2>&1
     exit /b 1
 )
 
@@ -63,7 +68,7 @@ if not exist "%installps%" (
     echo    %installps%
     echo.
     echo Check folder structure under %extractdir%
-    pause
+    taskkill /fi "WINDOWTITLE eq Win11_Upgrade_Heartbeat" /f >nul 2>&1
     exit /b 1
 )
 
@@ -75,6 +80,10 @@ echo ===========================================================
 echo.
 
 powershell -ExecutionPolicy Bypass -NoProfile -File "%installps%"
+
+:: --- Stop heartbeat when finished ---
+taskkill /fi "WINDOWTITLE eq Win11_Upgrade_Heartbeat" /f >nul 2>&1
+echo [%date% %time%] Heartbeat stopped. >> "%flag%"
 
 echo.
 echo ===========================================================
