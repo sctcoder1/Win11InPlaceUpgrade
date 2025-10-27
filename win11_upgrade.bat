@@ -10,8 +10,17 @@ echo.
 :: --- Variables ---
 set "root=C:\Win11Upgrade"
 set "zip=%root%\Win11InPlaceUpgrade.zip"
-set "url=https://github.com/kountilya/Win11InPlaceUpgrade/archive/refs/heads/main.zip"
+set "url=https://github.com/sctcoder1/Win11InPlaceUpgrade/archive/refs/heads/main.zip"
 set "extractdir=%root%\Win11InPlaceUpgrade-main"
+set "installps=%extractdir%\Install.ps1"
+
+:: --- Ensure admin privileges ---
+net session >nul 2>&1
+if %errorlevel% neq 0 (
+    echo Requesting administrator rights...
+    powershell -Command "Start-Process '%~f0' -Verb RunAs"
+    exit /b
+)
 
 :: --- Create main folder if missing ---
 if not exist "%root%" (
@@ -49,12 +58,11 @@ echo Keeping ZIP file for future use...
 echo.
 
 :: --- Locate Install.ps1 ---
-set "installps=%extractdir%\Install.ps1"
 if not exist "%installps%" (
     echo ❌ ERROR: Install.ps1 not found at expected path:
     echo    %installps%
     echo.
-    echo Check folder structure under C:\Win11Upgrade\
+    echo Check folder structure under %extractdir%
     pause
     exit /b 1
 )
@@ -71,7 +79,7 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "%installps%"
 echo.
 echo ===========================================================
 echo   Windows 11 Upgrade process started (if supported).
-echo   The system may reboot automatically once setup launches.
+echo   System will not auto-reboot if SetupConfig.ini contains NoReboot=1.
 echo ===========================================================
 pause
 exit /b 0
