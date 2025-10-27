@@ -85,6 +85,18 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "%installps%"
 taskkill /fi "WINDOWTITLE eq Win11_Upgrade_Heartbeat" /f >nul 2>&1
 echo [%date% %time%] Heartbeat stopped. >> "%flag%"
 
+:: --- Notify logged-in users to reboot ---
+echo.
+echo ===========================================================
+echo   Prompting user(s) to reboot to complete upgrade...
+echo ===========================================================
+for /f "skip=1 tokens=2 delims=\" %%I in ('query user ^| find "Active"') do (
+    msg %%I "✅ Windows 11 upgrade files are ready. Please reboot your computer to complete installation."
+)
+
+:: --- Fallback prompt for all users (if no active found) ---
+msg * "✅ Windows 11 upgrade files are ready. Please reboot your computer to complete installation."
+
 echo.
 echo ===========================================================
 echo   Windows 11 Upgrade process started (if supported).
