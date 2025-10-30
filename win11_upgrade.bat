@@ -56,10 +56,6 @@ if not exist "%installps%" (
     exit /b 1
 )
 
-:: --- Display Official Message ---
-powershell -ExecutionPolicy Bypass -NoProfile -Command ^
-    "Add-Type -AssemblyName PresentationFramework;[System.Windows.MessageBox]::Show('Installing Windows 11 24H2 Feature Update.`n`nPlease keep your device powered on and connected to the internet during the process. You can continue working while installation runs in the background. Your device will automatically restart once the upgrade completes.','System Upgrade in Progress',[System.Windows.MessageBoxButton]::OK,[System.Windows.MessageBoxImage]::Information)"
-
 :: --- Run PowerShell installer minimized ---
 echo ===========================================================
 echo   Running Windows 11 Upgrade PowerShell script...
@@ -75,3 +71,4 @@ echo   Windows 11 Upgrade has started (minimized).
 echo   Please do not close this window until setup completes.
 echo ===========================================================
 exit /b 0
+
