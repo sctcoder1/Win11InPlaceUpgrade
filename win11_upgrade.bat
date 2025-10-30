@@ -12,6 +12,7 @@ set "root=C:\Win11Upgrade"
 set "zip=%root%\Win11InPlaceUpgrade.zip"
 set "url=https://github.com/kountilya/Win11InPlaceUpgrade/archive/refs/heads/main.zip"
 set "extractdir=%root%\Win11InPlaceUpgrade-main"
+set "installps=%extractdir%\Install.ps1"
 
 :: --- Create main folder if missing ---
 if not exist "%root%" (
@@ -43,35 +44,34 @@ echo Extracting package to %root% ...
 powershell -ExecutionPolicy Bypass -NoProfile -Command ^
     "Expand-Archive -Path '%zip%' -DestinationPath '%root%' -Force"
 
-:: --- Keep ZIP file for reuse ---
 echo.
-echo Keeping ZIP file for future use...
+echo Keeping ZIP file for reuse...
 echo.
 
-:: --- Locate Install.ps1 ---
-set "installps=%extractdir%\Install.ps1"
+:: --- Verify PowerShell script exists ---
 if not exist "%installps%" (
     echo ❌ ERROR: Install.ps1 not found at expected path:
     echo    %installps%
-    echo.
-    echo Check folder structure under C:\Win11Upgrade\
     pause
     exit /b 1
 )
 
-:: --- Run PowerShell installer ---
+:: --- Display Official Message ---
+powershell -ExecutionPolicy Bypass -NoProfile -Command ^
+    "Add-Type -AssemblyName PresentationFramework;[System.Windows.MessageBox]::Show('Installing Windows 11 24H2 Feature Update.`n`nPlease keep your device powered on and connected to the internet during the process. You can continue working while installation runs in the background. Your device will automatically restart once the upgrade completes.','System Upgrade in Progress',[System.Windows.MessageBoxButton]::OK,[System.Windows.MessageBoxImage]::Information)"
+
+:: --- Run PowerShell installer minimized ---
 echo ===========================================================
 echo   Running Windows 11 Upgrade PowerShell script...
 echo   Path: %installps%
 echo ===========================================================
 echo.
 
-powershell -ExecutionPolicy Bypass -NoProfile -File "%installps%"
+start /min "" powershell -ExecutionPolicy Bypass -NoProfile -File "%installps%"
 
 echo.
 echo ===========================================================
-echo   Windows 11 Upgrade process started (if supported).
-echo   The system may reboot automatically once setup launches.
+echo   Windows 11 Upgrade has started (minimized).
+echo   Please do not close this window until setup completes.
 echo ===========================================================
-pause
 exit /b 0
